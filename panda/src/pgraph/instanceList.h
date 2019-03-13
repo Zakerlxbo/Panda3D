@@ -104,6 +104,9 @@ public:
 
   CPT(InstanceList) without(const BitArray &mask) const;
 
+  virtual void output(std::ostream &out) const;
+  virtual void write(std::ostream &out, int indent_level) const;
+
 private:
   Instances _instances;
 
@@ -136,6 +139,11 @@ public:
 private:
   static TypeHandle _type_handle;
 };
+
+inline std::ostream &operator <<(std::ostream &out, const InstanceList &list) {
+  list.output(out);
+  return out;
+}
 
 #include "instanceList.I"
 

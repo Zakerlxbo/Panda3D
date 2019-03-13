@@ -39,6 +39,7 @@
 #include "boundingSphere.h"
 #include "config_mathutil.h"
 #include "preparedGraphicsObjects.h"
+#include "instanceList.h"
 
 
 bool allow_flatten_color = ConfigVariableBool
@@ -522,6 +523,19 @@ add_for_draw(CullTraverser *trav, CullTraverserData &data) {
     CPT(RenderState) state = data._state->compose(geoms.get_geom_state(i));
     if (state->has_cull_callback() && !state->cull_callback(trav, data)) {
       // Cull.
+      continue;
+    }
+
+    if (data._instances != nullptr) {
+      // Draw each individual instance.
+      CPT(TransformState) cs_world_transform = trav->get_scene()->get_cs_world_transform();
+
+      for (const InstanceList::Instance &instance : *data._instances) {
+        CullableObject *object =
+          new CullableObject(geom, state,
+            cs_world_transform->compose(instance.get_transform()));
+        trav->get_cull_handler()->record_object(object, trav);
+      }
       continue;
     }
 

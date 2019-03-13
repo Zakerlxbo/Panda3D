@@ -50,6 +50,7 @@ CullTraverserData(const CullTraverserData &parent, PandaNode *child) :
   _state(parent._state),
   _view_frustum(parent._view_frustum),
   _cull_planes(parent._cull_planes),
+  _instances(parent._instances),
   _draw_mask(parent._draw_mask),
   _portal_depth(parent._portal_depth)
 {

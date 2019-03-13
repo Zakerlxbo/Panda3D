@@ -237,28 +237,30 @@ cull_callback(CullTraverser *trav, CullTraverserData &data) {
   if (data._net_transform->is_identity()) {
     // There is no net transform above this node, and we are not doing any
     // culling, so we can just use the instance list as-is.
-    data._instances = instances;
+    data._instances = std::move(instances);
   } else {
-    InstanceList *instances = new InstanceList;
-    for (InstanceList::Instance &instance : *instances) {
+    InstanceList *new_list = new InstanceList(*instances);
+    for (InstanceList::Instance &instance : *new_list) {
       instance.set_transform(data._net_transform->compose(instance.get_transform()));
     }
-    data._instances = instances;
+    data._instances = new_list;
   }
 
-  // Disable culling from this point on, for now.
+  // Disable culling from this point on, for now.  It's probably not worth it
+  // to keep lists of transformed bounding volumes for each instance.
   data._view_frustum = nullptr;
   data._cull_planes = CullPlanes::make_empty();
 
-  // This is temporary for now, until we actually have the hardware instancing
-  // implemented.
+  return true;
+
+  /*
   for (const InstanceList::Instance &instance : *instances) {
     CullTraverserData instance_data(data);
     instance_data.apply_transform(instance.get_transform());
     trav->traverse_below(instance_data);
   }
-
   return false;
+  */
 }
 
 /**

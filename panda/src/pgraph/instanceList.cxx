@@ -91,6 +91,25 @@ without(const BitArray &mask) const {
 }
 
 /**
+ *
+ */
+void InstanceList::
+output(ostream &out) const {
+  out << "InstanceList[" << size() << "]";
+}
+
+/**
+ *
+ */
+void InstanceList::
+write(ostream &out, int indent_level) const {
+  indent(out, indent_level) << "InstanceList[" << size() << "]:\n";
+  for (const Instance &instance : *this) {
+    indent(out, indent_level + 2) << *instance.get_transform() << "\n";
+  }
+}
+
+/**
  * Tells the BamReader how to create objects of type InstanceList.
  */
 void InstanceList::
